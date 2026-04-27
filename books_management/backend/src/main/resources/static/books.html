@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Books Management</title>
+<style>
+body { font-family: Arial; text-align: center; }
+input { margin: 5px; padding: 5px; }
+button { margin: 5px; padding: 5px 10px; }
+</style>
+</head>
+<body>
+
+<h2>Books Management</h2>
+
+<!-- Add Book -->
+<h3>Add Book</h3>
+<input type="number" id="id" placeholder="ID"><br>
+<input type="text" id="title" placeholder="Title"><br>
+<input type="text" id="author" placeholder="Author"><br>
+<button onclick="addBook()">Add Book</button>
+
+<hr>
+
+<!-- View Books -->
+<h3>All Books</h3>
+<button onclick="getBooks()">Load Books</button>
+<ul id="bookList"></ul>
+
+<hr>
+
+<!-- Update Book -->
+<h3>Update Book</h3>
+<input type="number" id="updateId" placeholder="ID"><br>
+<input type="text" id="updateTitle" placeholder="New Title"><br>
+<input type="text" id="updateAuthor" placeholder="New Author"><br>
+<button onclick="updateBook()">Update</button>
+
+<hr>
+
+<!-- Delete Book -->
+<h3>Delete Book</h3>
+<input type="number" id="deleteId" placeholder="ID"><br>
+<button onclick="deleteBook()">Delete</button>
+
+<script>
+const baseUrl = "http://localhost:8080/api/books";
+
+// GET
+function getBooks() {
+    fetch(baseUrl)
+    .then(res => res.json())
+    .then(data => {
+        let list = document.getElementById("bookList");
+        list.innerHTML = "";
+        data.forEach(book => {
+            let li = document.createElement("li");
+            li.innerText = book.id + " - " + book.title + " - " + book.author;
+            list.appendChild(li);
+        });
+    });
+}
+
+// POST
+function addBook() {
+    let book = {
+        id: document.getElementById("id").value,
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value
+    };
+
+    fetch(baseUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(book)
+    }).then(() => {
+        alert("Book Added");
+        getBooks();
+    });
+}
+
+// PUT
+function updateBook() {
+    let id = document.getElementById("updateId").value;
+
+    let book = {
+        id: id,
+        title: document.getElementById("updateTitle").value,
+        author: document.getElementById("updateAuthor").value
+    };
+
+    fetch(baseUrl + "/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(book)
+    }).then(() => {
+        alert("Book Updated");
+        getBooks();
+    });
+}
+
+// DELETE
+function deleteBook() {
+    let id = document.getElementById("deleteId").value;
+
+    fetch(baseUrl + "/" + id, {
+        method: "DELETE"
+    }).then(() => {
+        alert("Book Deleted");
+        getBooks();
+    });
+}
+</script>
+
+</body>
+</html>
+http://localhost:8080/books.html
